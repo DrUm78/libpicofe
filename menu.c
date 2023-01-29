@@ -166,9 +166,9 @@ void text_out16(int x, int y, const char *texto, ...)
 static void smalltext_out16_(int x, int y, const char *texto, int color)
 {
 
-#ifndef ALLOW_TEXT_OUT
+/*#ifndef ALLOW_TEXT_OUT
 	return;
-#endif //ALLOW_TEXT_OUT
+#endif //ALLOW_TEXT_OUT*/
 
 	unsigned char  *src;
 	unsigned short *dst;
@@ -209,9 +209,9 @@ static void smalltext_out16_(int x, int y, const char *texto, int color)
 static void smalltext_out16(int x, int y, const char *texto, int color)
 {
 
-#ifndef ALLOW_TEXT_OUT
+/*#ifndef ALLOW_TEXT_OUT
 	return;
-#endif //ALLOW_TEXT_OUT
+#endif //ALLOW_TEXT_OUT*/
 
 	char buffer[128];
 	int maxw = (g_menuscreen_w - x) / me_sfont_w;
@@ -992,10 +992,9 @@ static int dirent_seek_char(struct dirent **namelist, int len, int sel, char c)
 {
 	int i;
 
-	sel++;
 	for (i = sel + 1; ; i++) {
 		if (i >= len)
-			i = 1;
+			i = 0;
 		if (i == sel)
 			break;
 
@@ -1003,7 +1002,7 @@ static int dirent_seek_char(struct dirent **namelist, int len, int sel, char c)
 			break;
 	}
 
-	return i - 1;
+	return i;
 }
 
 static const char *menu_loop_romsel(char *curr_path, int len,
@@ -1120,14 +1119,14 @@ rescan:
 				namelist[sel]->d_name);
 			goto rescan;
 		}
-		if (inp & PBTN_UP  )  { sel--;   if (sel < 0)   sel = n-1; }
-		if (inp & PBTN_DOWN)  { sel++;   if (sel > n-1) sel = 0; }
-		if (inp & PBTN_LEFT)  { sel-=10; if (sel < 0)   sel = 0; }
-		if (inp & PBTN_L)     { sel-=24; if (sel < 0)   sel = 0; }
-		if (inp & PBTN_RIGHT) { sel+=10; if (sel > n-1) sel = n-1; }
-		if (inp & PBTN_R)     { sel+=24; if (sel > n-1) sel = n-1; }
+		if      (inp & PBTN_UP  )  { sel--;   if (sel < 0)   sel = n-1; }
+		else if (inp & PBTN_DOWN)  { sel++;   if (sel > n-1) sel = 0; }
+		else if (inp & PBTN_LEFT)  { sel-=10; if (sel < 0)   sel = 0; }
+		else if (inp & PBTN_RIGHT) { sel+=10; if (sel > n-1) sel = n-1; }
+		else if (inp & PBTN_L)     { sel-=24; if (sel < 0)   sel = 0; }
+		else if (inp & PBTN_R)     { sel+=24; if (sel > n-1) sel = n-1; }
 
-		if ((inp & PBTN_MOK) || (inp & (PBTN_MENU|PBTN_MA2)) == (PBTN_MENU|PBTN_MA2))
+		else if ((inp & PBTN_MOK) || (inp & (PBTN_MENU|PBTN_MA2)) == (PBTN_MENU|PBTN_MA2))
 		{
 			if (namelist[sel]->d_type == DT_REG)
 			{
